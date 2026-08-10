@@ -1,120 +1,175 @@
 const prompt = require("prompt-sync")();
 
-let TODO = [];
-let pilihan;
+// Object Manager untuk mengelola Todo (Memenuhi kriteria Object Method & 'this')
+const todoManager = {
+    todos: [],
+    nextId: 1,
 
-do {
-    console.clear();
-    console.log("==============================");
-    console.log("Selamat datang di TODO APP");
-    console.log("==============================");
-    console.log("1. Lihat TODO");
-    console.log("2. Tambah TODO");
-    console.log("3. Hapus TODO");
-    console.log("4. Cari TODO");
-    console.log("5. Keluar");
-
-    pilihan = prompt("\nPilih menu (1-5): ");
-
-    if (pilihan === "1") {
+    tambahTodo() {
         console.clear();
-        console.log("===== TODO =====");
+        const judul = prompt("Masukkan Todo baru: ");
 
-        if (TODO.length === 0) {
-            console.log("📂 TODO masih kosong.");
-        } else {
-            for (let i = 0; i < TODO.length; i++) {
-                console.log(i + 1 + ". " + TODO[i]);
-            }
-        }
-
-        prompt("\nTekan Enter untuk kembali...");
-    }
-
-    else if (pilihan === "2") {
-        console.clear();
-
-        const todo = prompt("Masukkan TODO baru: ");
-
-        if (todo === "") {
+        if (judul.trim() === "") {
             console.log("❌ TODO tidak boleh kosong.");
         } else {
-            TODO.push(todo);
-            console.log("✅" + todo + " berhasil ditambahkan ke daftar TODO!");
+            // Data dalam bentuk Object sesuai ketentuan
+            const todoBaru = {
+                id: this.nextId++,
+                judul: judul,
+                selesai: false
+            };
+            this.todos.push(todoBaru);
+            console.log("✅ Todo berhasil ditambahkan!");
         }
-        
-        prompt("\nTekan Enter untuk kembali...");
-    }
+    },
 
-    else if (pilihan === "3") {
+    lihatTodo() {
         console.clear();
+        console.log("========== TODO ==========");
 
-        if (TODO.length === 0) {
-            console.log("TODO masih kosong.");
+        if (this.todos.length === 0) {
+            console.log("📂 TODO masih kosong.");
         } else {
-
-            console.log("===== TODO =====");
-
-            for (let i = 0; i < TODO.length; i++) {
-                console.log(`${i + 1}. ${TODO[i]}`);
-            }
-
-            let nomor = Number(prompt("\nMasukkan nomor TODO yang ingin dihapus: "));
-
-            if (nomor >= 1 && nomor <= TODO.length) {
-
-                let todoHapus = TODO[nomor - 1];
-
-                TODO.splice(nomor - 1, 1);
-
-                console.log("✅" + todoHapus + " berhasil dihapus dari daftar TODO!");
-
-            } else {
-                console.log("❌ Nomor tidak valid.");
+            // Wajib menggunakan loop for...of
+            for (const todo of this.todos) {
+                const status = todo.selesai ? "[Selesai]" : "[Belum selesai]";
+                console.log(`${todo.id}. ${todo.judul} ${status}`);
             }
         }
+        console.log("==========================");
+    },
 
-        prompt("\nTekan Enter untuk kembali...");
-    }
-
-    else if (pilihan === "4") {
+    selesaikanTodo() {
         console.clear();
+        if (this.todos.length === 0) {
+            console.log("📂 TODO masih kosong.");
+            return;
+        }
 
-        if (TODO.length === 0) {
-            console.log("TODO masih kosong.");
-        } else {
+        this.lihatTodo();
+        const idInput = Number(prompt("\nMasukkan ID Todo yang selesai: "));
 
-            const cari = prompt("Masukkan TODO yang ingin dicari: ");
+        let ditemukan = false;
+        // Contoh penggunaan for...of untuk mencari ID
+        for (const todo of this.todos) {
+            if (todo.id === idInput) {
+                todo.selesai = true;
+                ditemukan = true;
+                console.log(`✅ Todo "${todo.judul}" berhasil diselesaikan!`);
 
-            let ditemukan = false;
-
-            for (let i = 0; i < TODO.length; i++) {
-
-                if (TODO[i].toLowerCase().includes(cari.toLowerCase())) {
-
-                    console.log("\n✅ TODO ditemukan!");
-                    console.log(i + 1 + ". " + TODO[i]);
-
-                    ditemukan = true;
+                // Menggunakan for...in untuk memenuhi kriteria iterasi properti object
+                console.log("\nDetail Todo (diperbarui):");
+                for (let key in todo) {
+                    console.log(`  ${key}: ${todo[key]}`);
                 }
-            }
-
-            if (!ditemukan) {
-                console.log("❌ TODO tidak ditemukan.");
+                break;
             }
         }
 
-        prompt("\nTekan Enter untuk kembali...");
-    }
+        if (!ditemukan) {
+            console.log("❌ ID Todo tidak ditemukan.");
+        }
+    },
 
-    else if (pilihan === "5") {
+    hapusTodo() {
         console.clear();
-        console.log("👋 Terima kasih telah menggunakan CLI Spotify.");
-    }
+        if (this.todos.length === 0) {
+            console.log("📂 TODO masih kosong.");
+            return;
+        }
 
-    else {
-        console.log("❌ Menu tidak tersedia.");
-        prompt("\nTekan Enter untuk kembali...");
-    }
+        this.lihatTodo();
+        const idInput = Number(prompt("\nMasukkan ID Todo yang ingin dihapus: "));
 
-} while (pilihan !== "5");
+        const index = this.todos.findIndex(todo => todo.id === idInput);
+
+        if (index !== -1) {
+            const todoHapus = this.todos.splice(index, 1);
+            console.log(`✅ Todo "${todoHapus[0].judul}" berhasil dihapus!`);
+        } else {
+            console.log("❌ ID Todo tidak ditemukan.");
+        }
+    },
+
+    cariTodo() {
+        console.clear();
+        if (this.todos.length === 0) {
+            console.log("📂 TODO masih kosong.");
+            return;
+        }
+
+        const kataKunci = prompt("Masukkan kata kunci: ").toLowerCase();
+        console.log("\nHasil pencarian:");
+
+        let ditemukan = false;
+        for (const todo of this.todos) {
+            if (todo.judul.toLowerCase().includes(kataKunci)) {
+                const status = todo.selesai ? "[Selesai]" : "[Belum selesai]";
+                console.log(`${todo.id}. ${todo.judul} ${status}`);
+                ditemukan = true;
+            }
+        }
+
+        if (!ditemukan) {
+            console.log("❌ Todo tidak ditemukan.");
+        }
+    }
+};
+
+// Function menampilkan menu utama
+function tampilkanMenu() {
+    console.clear();
+    console.log("==============================");
+    console.log("        TODO LIST APP         ");
+    console.log("==============================");
+    console.log("1. Tambah Todo");
+    console.log("2. Lihat Todo");
+    console.log("3. Selesaikan Todo");
+    console.log("4. Hapus Todo");
+    console.log("5. Cari Todo");
+    console.log("6. Keluar");
+}
+
+// Function Utama Alur Program
+function main() {
+    let pilihan;
+
+    do {
+        tampilkanMenu();
+        pilihan = prompt("\nPilih menu (1-6): ");
+
+        switch (pilihan) {
+            case "1":
+                todoManager.tambahTodo();
+                prompt("\nTekan Enter untuk kembali...");
+                break;
+            case "2":
+                todoManager.lihatTodo();
+                prompt("\nTekan Enter untuk kembali...");
+                break;
+            case "3":
+                todoManager.selesaikanTodo();
+                prompt("\nTekan Enter untuk kembali...");
+                break;
+            case "4":
+                todoManager.hapusTodo();
+                prompt("\nTekan Enter untuk kembali...");
+                break;
+            case "5":
+                todoManager.cariTodo();
+                prompt("\nTekan Enter untuk kembali...");
+                break;
+            case "6":
+                console.clear();
+                console.log("👋 Terima kasih telah menggunakan Todo List!");
+                break;
+            default:
+                console.log("❌ Menu tidak valid.");
+                prompt("\nTekan Enter untuk kembali...");
+        }
+
+    } while (pilihan !== "6");
+}
+
+// Jalankan program
+main();
