@@ -1,5 +1,23 @@
 {
   "dependencies": {
     "prompt-sync": "^4.2.0"
-  }
+  },
+  "name": "todo-app",
+  "version": "1.0.0",
+  "description": "Sistem Manajemen Gudang CLI adalah aplikasi berbasis Command Line Interface (CLI) yang dibangun menggunakan **Node.js (JavaScript)**. Aplikasi ini dirancang untuk mempermudah petugas gudang dalam pencatatan barang masuk, pengelolaan status pemrosesan barang, pencarian barang, hingga pengaturan posisi rak penyimpanan dan tingkat prioritas penanganan.",
+  "main": "todo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dznrr1-gramer/todo-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dznrr1-gramer/todo-app/issues"
+  },
+  "homepage": "https://github.com/dznrr1-gramer/todo-app#readme"
 }

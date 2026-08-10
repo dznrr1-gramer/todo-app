@@ -3,7 +3,6 @@ const prompt = require("prompt-sync")();
 // Object Manager untuk mengelola Todo (Memenuhi kriteria Object Method & 'this')
 const todoManager = {
     todos: [],
-    nextId: 1,
 
     tambahTodo() {
         console.clear();
